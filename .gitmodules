@@ -1,0 +1,9 @@
+[submodule "go-kzg"]
+	path = go-kzg
+	url = https://github.com/protolambda/go-kzg
+[submodule "numericalgo"]
+	path = numericalgo
+	url = https://github.com/DzananGanic/numericalgo
+[submodule "bls12-381"]
+	path = bls12-381
+	url = https://github.com/kilic/bls12-381
