@@ -32,14 +32,8 @@ func owf(str string) uint64 {
 }
 
 // Lagrange interpolation to get the coefficients of psi
-func lagrangeInterpolate(x, y []uint64) []uint64 {
-	// TODO: Lagrange interpolation on Z_p
-	// The below code is just a test
-	coef := make([]uint64, len(y))
-	for i := 0; i < len(y); i++ {
-		coef[i] = x[i]
-	}
-	return coef
+func lagrangeInterpolate(x, y []bls.Fr) []bls.Fr {
+	return Interpolate(x, y)
 }
 
 func Setup(scale uint8, secret string, n uint64) *HiddenStateSettings {
@@ -63,19 +57,15 @@ func CreatePoly(hs *HiddenStateSettings, TX []string) ([]bls.Fr, error) {
 		return nil, errors.New("TX size is larger than max size!")
 	}
 
-	x := make([]uint64, len(TX))
-	y := make([]uint64, len(TX))
-	for i := 0; i < len(TX); i++ {
-		x[i] = uint64(i)
-		y[i] = owf(TX[i])
+	n := len(TX)
+	x := make([]bls.Fr, n, n)
+	y := make([]bls.Fr, n, n)
+	for i := 0; i < n; i++ {
+		bls.AsFr(&x[i], uint64(i))
+		bls.AsFr(&y[i], owf(TX[i]))
 	}
 
-	coef := lagrangeInterpolate(x, y)
-	n := len(coef)
-	poly := make([]bls.Fr, n, n)
-	for i := 0; i < n; i++ {
-		bls.AsFr(&poly[i], coef[i])
-	}
+	poly := lagrangeInterpolate(x, y)
 
 	return poly, nil
 }
